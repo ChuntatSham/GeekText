@@ -6,11 +6,13 @@
         <br>
 
         <div class="flexcontainer">
+            {% if page_obj %}
             {% for books in page_obj%}
                {% if books.cover %}
                 <div class="card">
                     <img class="img mx-auto" src="{{ books.cover.url }}" width="125" height="175"><br>
-                    <a href="{{ books.get_absolute_url }}"> {{books.book_name}} </a><br>
+                    <span class="bookName" ><a href="{{ books.get_absolute_url }}"> {{books.book_name}} </a></span>
+                    <br>
                     <a href=" {% url 'author_book_list' books.author.id %}">{{books.author}}</a><br>
                      <a><b>Rating:</b> {{books.rating}} Stars</a>
                      <a>${{books.price}}</a>
@@ -34,6 +36,10 @@
                 </div>
                 {% endif %}
             {% endfor %}
+            {% else %}
+            <h2>Sorry, we do not have any books under this genre now.</h2>
+            <h2>Please take a look on the other books!</h2>
+            {% endif %}
         </div>
         <!-- C.R. changed added pagination -->
         <form method="GET">
