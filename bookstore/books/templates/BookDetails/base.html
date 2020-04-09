@@ -16,25 +16,13 @@
         <div class="top_nav">
             <div class="left">
               <div class="logo"><p><span>Geek</span>Text</p></div>
-              <div class="search_bar">
+              <!-- <div class="search_bar">
                   <input type="text" placeholder="Search">
-              </div>
+              </div> -->
           </div> 
           <div class="right">
             <ul>
               <li><a href="{% url 'index' %}">HOME</a></li>
-              <!-- {% if user.is_authenticated %}
-              <li ><a href=" {% url 'order_summary' %}">Shopping Cart<i class="fa fa-shopping-cart"></i></a></li>
-              {% else%}
-               SIGN UP TAKEN OUT
-              <li ><a href=" {% url 'order_summary' %}">Sign Up<i class="fa fa-shopping-cart"></i></a></li>
-              {% endif%}
-              OLD DONE
-              {% if user.is_authenticated %}
-              {% else%}
-              <li><a href="#">Login</a></li>
-              {% endif%}  
-              --> 
               {% if user.is_authenticated %}
                 <li ><a href=" {% url 'order_summary' %}">Shopping Cart<i class="fa fa-shopping-cart"></i></a></li>
                 <li><a href="{% url 'profile' %}">Profile</a></li>
