@@ -29,6 +29,10 @@
         {% else %}
         <button><a href=" {% url 'add_to_cart' Book.id %}">Add to Cart</a></button>
         {% endif %}
+        <br><br>
+        <h3> Reviews </h3>
+        <b> Anonymous: </b> This book was great! A must read!
+        <br><br><br>
     {% else %}
         <h2>{{ Book.book_name }}</h2>
         {{ Book.description}}
@@ -53,6 +57,10 @@
         {% else %}
         <button><a href=" {% url 'add_to_cart' Book.id %}">Add to Cart</a></button>
         {% endif %}
+        <br><br>
+        <h3> Reviews </h3>
+        <b> Anonymous: </b> This book was great! A must read!
+        <br><br><br>
     {% endif %}
 
 {% endblock %}
