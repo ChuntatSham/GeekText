@@ -15,7 +15,7 @@
         <br>
         <b>Publication Date:</b> {{ Book.published_date}}
         <br>
-        <b>Rating:</b> {{ Book.rating}}
+        <b>Rating:</b> {{ Book.rating}} Stars
         <br><br>
         <b>Author: <a href=" {% url 'author_book_list' Book.author.id %}">{{Book.author}}</a></li></b>
         <br>
@@ -43,7 +43,7 @@
         <br>
         <b>Publication Date:</b> {{ Book.published_date}}
         <br>
-        <b>Rating:</b> {{ Book.rating}}
+        <b>Rating:</b> {{ Book.rating}} Stars
         <br><br>
         <b>Author: <a href=" {% url 'author_book_list' Book.author.id %}">{{Book.author}}</a></li></b> 
         <br>

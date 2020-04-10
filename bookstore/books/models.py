@@ -14,6 +14,7 @@ STATUS_CHOICES=(
 )
         
 # Create your models here.
+#C.R. created genre and author models
 class Genre(models.Model):
     """Model representing a book genre (e.g. Science Fiction, Non Fiction)."""
     name = models.CharField(max_length=200, db_index=True)
@@ -47,15 +48,15 @@ class Author(models.Model):
         return '{0}, {1}'.format(self.last_name, self.first_name)
 
 #S.T. started Book Details model below
+#C.R. added top_seller and rating field 
 class Book(models.Model):
     """Model class for books"""
 
     book_name = models.CharField(max_length = 256)
     author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
     description = models.CharField(max_length=10000)
-    genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True)
+    genre = models.ManyToManyField(Genre)
     cover = models.ImageField(null=True, upload_to='media')
-    #we're assuming that no book is published before 0 A.D.
     published_date = models.DateField(null=True, blank=True)
     publishing_info = models.CharField(max_length = 256)
     price = models.DecimalField(null = True, max_digits=10, decimal_places=2)
