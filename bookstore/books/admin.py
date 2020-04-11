@@ -17,7 +17,7 @@ class AuthorAdmin(admin.ModelAdmin):
 admin.site.register(Author, AuthorAdmin)
 
 class BookAdmin(admin.ModelAdmin):
-    list_display = ['book_name', 'author', 'description',
+    list_display = ['book_name', 'author',
                     'cover', 'published_date', 'publishing_info','price',
                     'top_seller', 'rating']
     list_filter = ['top_seller', 'rating']

@@ -12,7 +12,7 @@
 <b>Genre:</b> {% for genre in Book.genre.all %} 
 <a href="{% url 'book_genre' genre.name %}">{{ genre.name }}</a>
                     {% if forloop.last %}
-                        . 
+                        
                     {% else %}
                         , 
                     {%endif%}
