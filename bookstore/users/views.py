@@ -4,7 +4,7 @@ from .forms import UserSignupForm, UserUpdateForm, ProfileUpdateForm, AddressFor
 from .models import Address, CreditCard
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView
-
+from books.models import Genre
 
 def SignUpView(request):
     if request.method == 'POST':
@@ -21,6 +21,7 @@ def SignUpView(request):
 
 @login_required
 def ProfileView(request):
+    genre_list = Genre.objects.all()
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
@@ -39,6 +40,7 @@ def ProfileView(request):
     context = {
         'u_form': u_form,
         'p_form': p_form,
+        'genre_list': genre_list,
         # 'a_form': a_form
     }
 
@@ -49,6 +51,7 @@ def ProfileView(request):
 
 @login_required
 def AddressView(request):
+    genre_list = Genre.objects.all()
     if request.method == 'POST':
         a_form = AddressForm(request.POST)#, instance=request.user.addresses)
         if a_form.is_valid():
@@ -113,7 +116,7 @@ def CCardView(request):
 
 
 def CCardListView(request):
-    queryset = CreditCard.objects.all()
+    queryset = CreditCard.objects.all() 
     return render(request, 'users/card_management.html', { 'object_list': queryset })
     
 
