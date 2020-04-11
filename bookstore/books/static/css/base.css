@@ -33,11 +33,12 @@
   }
   
   .wrapper .top_nav .left .logo p{
-    font-size: 24px;
+    font-size: 36px;
     font-weight: bold;
     color: #494949;
     font-family: "Mountains of Christmas", cursive;
     margin-right: 25px;
+    margin-top: 15px;
   }
   
   .wrapper .top_nav .left .logo p span{
@@ -252,6 +253,12 @@
   background-color: #f1f1f1;
   } 
 
-  
+  .bookName{
+    display: inline-block;
+    height: 25px;
+  }
 
+  .top_nav_right {
+    margin-top: 15px;
+  }
     

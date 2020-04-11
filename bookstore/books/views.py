@@ -13,7 +13,8 @@ import datetime
 from .models import Book, Genre, Author, Order, OrderItem
 from users.models import Profile
 from django import forms
-
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 
 #S.T. views for home page and book details pages
 def nonUser(request):
@@ -26,14 +27,18 @@ def author_book_list(request, author):
     except Author.DoesNotExist:
         athing = None
     Books = Book.objects.filter(author = athing)
+    # C.R. added this to all methods to allow pagination
     paginate_by = request.GET.get('paginate_by', 10)
     paginator = Paginator(Books, paginate_by) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    # C.R. added this to get a list of genre objects 
+    genre_list = Genre.objects.all()
 
     context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
     }
     #C.S. edits to index
     if not request.user.is_authenticated:
@@ -49,6 +54,7 @@ def author_book_list(request, author):
         context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
             'current_order_products': current_order_products
         }
         return render(request, "BookDetails/index.html", context)
@@ -60,10 +66,12 @@ def index(request):
     paginator = Paginator(Books, paginate_by) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    genre_list = Genre.objects.all()
 
     context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
     }
     #C.S. edits to index
     if not request.user.is_authenticated:
@@ -79,27 +87,26 @@ def index(request):
         context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
             'current_order_products': current_order_products
         }
         return render(request, "BookDetails/index.html", context)
 
 # C.R. added pagination, browsing and sorting functions
 
+# C.R. method to browse by genre
 def book_genre(request, gname):
-    # athing = Genre.objects.get(name=gname)
-    try:
-        athing = Genre.objects.get(name=gname)
-    except Genre.DoesNotExist:
-        athing = None
-    Books = Book.objects.filter(genre = athing)
+    Books = Book.objects.filter(genre__name = gname)
     paginate_by = request.GET.get('paginate_by', 10)
     paginator = Paginator(Books, paginate_by)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    genre_list = Genre.objects.all()
 
     context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
     }
     #C.S. edits to index
     if not request.user.is_authenticated:
@@ -115,20 +122,24 @@ def book_genre(request, gname):
         context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
             'current_order_products': current_order_products
         }
         return render(request, "BookDetails/index.html", context)
 
+# C.R. method to browse by best seller
 def book_top_seller(request):
     Books = Book.objects.filter(top_seller=True)
     paginate_by = request.GET.get('paginate_by', 10)
     paginator = Paginator(Books, paginate_by) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    genre_list = Genre.objects.all()
 
     context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
     }
     #C.S. edits to index
     if not request.user.is_authenticated:
@@ -144,10 +155,12 @@ def book_top_seller(request):
         context = {
             'Book': Books,
             'page_obj': page_obj,
-            'current_order_products': current_order_products
+            'current_order_products': current_order_products,
+            'genre_list': genre_list,
         }
         return render(request, "BookDetails/index.html", context)
 
+# C.R. method to browse by ratings 
 def book_rating(request,filter):
     if filter == 1:
         Books = Book.objects.filter(rating__gte=1)
@@ -166,10 +179,12 @@ def book_rating(request,filter):
     paginator = Paginator(Books, paginate_by)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    genre_list = Genre.objects.all()
 
     context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
     }
     #C.S. edits to index
     if not request.user.is_authenticated:
@@ -185,257 +200,44 @@ def book_rating(request,filter):
         context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
             'current_order_products': current_order_products
         }
         return render(request, "BookDetails/index.html", context)
 
-def book_no(request):
-    Books = Book.objects.prefetch_related("Books")
-    Books = Book.objects.order_by("book_name")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_rev(request):
-    Books = Book.objects.prefetch_related("Books")
-    Books = Book.objects.order_by("-book_name")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_priceneg(request):
-    Books = Book.objects.order_by("-price")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by)  
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_pricepos(request):
-    Books = Book.objects.order_by("price")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_author(request):
-    Books = Book.objects.order_by("author")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_author_rev(request):
-    Books = Book.objects.order_by("-author")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_pub_rev(request):
-    Books = Book.objects.order_by("-published_date")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_pub(request):
-    Books = Book.objects.order_by("published_date")
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
-
-def book_rate(request, filter=None):
+# C.R. method to order books
+def book_order(request, filter=None):
     if filter == 1:
+        Books = Book.objects.order_by('book_name')
+    elif filter == 2:
+        Books = Book.objects.order_by('-book_name')
+    elif filter == 3:
+        Books = Book.objects.order_by('author')
+    elif filter == 4:
+        Books = Book.objects.order_by('-author')
+    elif filter == 5:
+        Books = Book.objects.order_by('price')
+    elif filter == 6:
+        Books = Book.objects.order_by('-price')
+    elif filter == 7:
+        Books = Book.objects.order_by('published_date')
+    elif filter == 8:
+        Books = Book.objects.order_by('-published_date')
+    elif filter == 9:
         Books = Book.objects.order_by('rating')
     else:
         Books = Book.objects.order_by('-rating')
+
     paginate_by = request.GET.get('paginate_by', 10)
     paginator = Paginator(Books, paginate_by) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    genre_list = Genre.objects.all()
 
     context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
     }
     #C.S. edits to index
     if not request.user.is_authenticated:
@@ -451,38 +253,11 @@ def book_rate(request, filter=None):
         context = {
             'Book': Books,
             'page_obj': page_obj,
+            'genre_list': genre_list,
             'current_order_products': current_order_products
         }
-        return render(request, "BookDetails/index.html", context)
+        return render(request, 'BookDetails/index.html', context)
 
-def book_rate_small(request, filter=None):
-    Books = Book.objects.order_by('-rating')
-    paginate_by = request.GET.get('paginate_by', 10)
-    paginator = Paginator(Books, paginate_by) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-            'Book': Books,
-            'page_obj': page_obj,
-    }
-    #C.S. edits to index
-    if not request.user.is_authenticated:
-        return render(request, 'BookDetails/index.html', context) 
-    else:
-        filtered_orders = Order.objects.filter(owner=request.user.profile)
-        current_order_products = []
-        if filtered_orders.exists():
-            user_order = filtered_orders[0]
-            user_order_items = user_order.items.all()
-            current_order_products = [product.product for product in user_order_items]
-
-        context = {
-            'Book': Books,
-            'page_obj': page_obj,
-            'current_order_products': current_order_products
-        }
-        return render(request, "BookDetails/index.html", context)
 
 @login_required()
 def save_item(request,item_id):
@@ -498,8 +273,13 @@ def add_back_item(request,item_id):
 
 def bookDetails(request, title):
     book = get_object_or_404(Book, book_name=title)
+    genre_list = Genre.objects.all()
     #C.S. edits to index
     if not request.user.is_authenticated:
+        context = {
+            'Book': book,
+            'genre_list': genre_list,
+        }
         return render(request, 'BookDetails/bookDetails.html', {'Book': book}) 
     else:
         filtered_orders = Order.objects.filter(owner=request.user.profile)
@@ -511,7 +291,8 @@ def bookDetails(request, title):
 
         context = {
             'Book': book,
-            'current_order_products': current_order_products
+            'current_order_products': current_order_products,
+            'genre_list': genre_list,
         }
         return render(request, "BookDetails/bookDetails.html", context)
 
@@ -540,7 +321,7 @@ def add_to_cart(request, **kwargs):
         user_order.save()
 
     messages.info(request, "item added to cart")
-    return redirect(reverse('index'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @login_required()
 def add_quantity_from_cart(request,item_id):
@@ -570,9 +351,12 @@ def delete_from_cart(request, item_id):
 
 @login_required()
 def order_details(request, **kwargs):
+    genre_list = Genre.objects.all()
     existing_order = get_user_pending_order(request)
+
     context = {
-        'order': existing_order
+        'order': existing_order,
+        'genre_list': genre_list,
     }
     return render(request, 'BookDetails/order_summary.html', context)
 
