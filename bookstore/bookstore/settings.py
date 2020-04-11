@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',   # Users application
     'crispy_forms',             # Formatting the users application
+    'django_countries',         # Countries list
+    # 'creditcards',
 ]
 
 MIDDLEWARE = [

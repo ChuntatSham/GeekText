@@ -1,0 +1,36 @@
+{% extends 'BookDetails/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+    <br>
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ user.username }}</h2>
+                <p class="text-secondary">{{ user.email }}</p>
+            </div>
+        </div>
+
+        <legend class="border-bottom mb-4">Manage Credit Cards</legend>
+        {% for instance in object_list %}
+            <ul type="disc"><a href="{{ instance.get_absolute_url }}update/">
+                <li class="text-secondary">
+                    {{ instance.card_number }} - 
+                    {{ instance.expiration_month }} - 
+                    {{ instance.expiration_year }} - 
+                    {{ instance.security_code }} - 
+                    {{ instance.cardholder_name }}
+                </li></a>
+            </ul>
+        {% empty %}
+            <li>No Credit Cards</li>
+        {% endfor %}
+        <div class="form-group">
+            <a href="{% url 'profile' %}"><button class="btn btn-outline-info" type="button">Go Back</button></a>
+            <a href="{% url 'add_card' %}"><button class="btn btn-outline-info" type="button">Add Credit Card</button></a>
+        </div>
+    </div>
+
+{% endblock %}

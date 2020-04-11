@@ -1,20 +1,28 @@
 from django.contrib import admin
-# from django.contrib.auth import get_user_model
-# from django.contrib.auth.admin import UserAdmin
+from .models import Profile, Address, CreditCard
 
-# from .forms import CustomUserCreationForm, CustomUserChangeForm
-# from .models import CustomUser
+class AddressAdmin(admin.ModelAdmin):
+    list_display = [
+        'profile',
+        'street_address',
+        'apartment_address',
+        'city',
+        'state',
+        'zip',
+        'country',
+        'default'
+    ]
 
-# # Register your models here.
-
-# class CustomUserAdmin(UserAdmin):
-#     add_form = CustomUserCreationForm
-#     form = CustomUserChangeForm
-#     model = CustomUser
-#     list_display = ['email', 'username']
-
-# admin.site.register(CustomUser, CustomUserAdmin)
-
-from .models import Profile
+class CreditCardAdmin(admin.ModelAdmin):
+    list_display = [
+        'card_number',
+        'expiration_month',
+        'expiration_year',
+        'security_code',
+        'cardholder_name',
+        'default'
+    ]
 
 admin.site.register(Profile)
+admin.site.register(Address, AddressAdmin)
+admin.site.register(CreditCard, CreditCardAdmin)

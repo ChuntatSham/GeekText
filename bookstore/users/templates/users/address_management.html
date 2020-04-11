@@ -1,0 +1,39 @@
+{% extends 'BookDetails/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+    <br>
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ user.username }}</h2>
+                <p class="text-secondary">{{ user.email }}</p>
+            </div>
+        </div>
+
+        <legend class="border-bottom mb-4">Manage Addresses</legend>
+        {% for instance in object_list %}
+            <ul type="disc"><a href="{{ instance.get_absolute_url }}update/">
+                <li class="text-secondary">
+                    {{ instance.street_address }},
+                    {% if instance.apartment_address %}
+                        {{ instance.apartment_address }},
+                    {% endif %}
+                    {{ instance.city }},
+                    {{ instance.state }},
+                    {{ instance.zip }},
+                    {{ instance.country }}
+                </li></a>
+            </ul>
+        {% empty %}
+            <li>No addresses</li>
+        {% endfor %}
+        <div class="form-group">
+            <a href="{% url 'profile' %}"><button class="btn btn-outline-info" type="button">Go Back</button></a>
+            <a href="{% url 'add_address' %}"><button class="btn btn-outline-info" type="button">Add Address</button></a>
+        </div>
+    </div>
+
+{% endblock %}
