@@ -280,7 +280,7 @@ def bookDetails(request, title):
             'Book': book,
             'genre_list': genre_list,
         }
-        return render(request, 'BookDetails/bookDetails.html', {'Book': book}) 
+        return render(request, 'BookDetails/bookDetails.html', context) 
     else:
         filtered_orders = Order.objects.filter(owner=request.user.profile)
         current_order_products = []
