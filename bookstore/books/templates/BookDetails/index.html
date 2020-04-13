@@ -6,35 +6,41 @@
         <br>
 
         <div class="flexcontainer">
+
             {% if page_obj %}
             {% for books in page_obj%}
-               {% if books.cover %}
-                <div class="card">
-                    <img class="img mx-auto" src="{{ books.cover.url }}" width="125" height="175"><br>
-                    <span class="bookName" ><a href="{{ books.get_absolute_url }}"> {{books.book_name}} </a></span>
-                    <br>
-                    <a href=" {% url 'author_book_list' books.author.id %}">{{books.author}}</a><br>
-                     <a><b>Rating:</b> {{books.rating}} Stars</a>
-                     <a>${{books.price}}</a>
-                    {% if books in current_order_products %}
-                    <button><a href=" {% url 'order_summary' %}">Go to Cart</a></button>
-                    {% else %}
-                    <button><a href=" {% url 'add_to_cart' books.id %}">Add to Cart</a></button>
-                    {% endif %}
-                </div>
-                {% else %}
-                <div class="card">
-                    <a href="{{ books.get_absolute_url }}"> </a> {{books.book_name}}</a> <br>
-                    <a href=" {% url 'author_book_list' books.author.id %}">{{books.author}}</a><br>
-                    <a><b>Rating:</b> {{books.rating}} Stars</a>
-                    <a>${{books.price}}</a>
-                    {% if books in current_order_products %}
-                    <button><a href=" {% url 'order_summary' %}">Go to Cart</a></button>
-                    {% else %}
-                    <button><a href=" {% url 'add_to_cart' books.id %}">Add to Cart</a></button>
-                    {% endif %}
-                </div>
-                {% endif %}
+                <!-- {% if 'export_querset' in request.session %}
+                {{request.session.export_querset}}
+                {% endif%} -->
+                {% if books.id in request.session.export_querset %}
+                        {% if books.cover %}
+                            <div class="card">
+                                <img class="img mx-auto" src="{{ books.cover.url }}" width="125" height="175"><br>
+                                <span class="bookName" ><a href="{{ books.get_absolute_url }}"> {{books.book_name}} </a></span>
+                                <br>
+                                <a href=" {% url 'author_book_list' books.author.id %}">{{books.author}}</a><br>
+                                <a><b>Rating:</b> {{books.rating}} Stars</a>
+                                <a>${{books.price}}</a>
+                                {% if books in current_order_products %}
+                                <button><a href=" {% url 'order_summary' %}">Go to Cart</a></button>
+                                {% else %}
+                                <button><a href=" {% url 'add_to_cart' books.id %}">Add to Cart</a></button>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <div class="card">
+                                <a href="{{ books.get_absolute_url }}"> </a> {{books.book_name}}</a> <br>
+                                <a href=" {% url 'author_book_list' books.author.id %}">{{books.author}}</a><br>
+                                <a><b>Rating:</b> {{books.rating}} Stars</a>
+                                <a>${{books.price}}</a>
+                                {% if books in current_order_products %}
+                                <button><a href=" {% url 'order_summary' %}">Go to Cart</a></button>
+                                {% else %}
+                                <button><a href=" {% url 'add_to_cart' books.id %}">Add to Cart</a></button>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        {%endif%}
             {% endfor %}
             {% else %}
             <h2>Sorry, we do not have any books under this genre now.</h2>
