@@ -27,7 +27,7 @@ six==1.14.0
 sqlparse==0.3.0
 stevedore==1.32.0
 stripe==1.82.1
-urllib3==1.24.2
+urllib3==1.26.5
 utils==1.0.1
 virtualenv==20.0.3
 virtualenv-clone==0.5.3
